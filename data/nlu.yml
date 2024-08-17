@@ -1,0 +1,69 @@
+version: "3.1"
+
+nlu:
+- intent: greet
+  examples: |
+    - hey
+    - hello
+    - hi
+    - hello there
+    - good morning
+    - good evening
+    - moin
+    - hey there
+    - let's go
+    - hey dude
+    - goodmorning
+    - goodevening
+    - good afternoon
+
+- intent: goodbye
+  examples: |
+    - cu
+    - good by
+    - cee you later
+    - good night
+    - bye
+    - goodbye
+    - have a nice day
+    - see you around
+    - bye bye
+    - see you later
+
+- intent: ask_for_help_flooding
+  examples: |
+    - Help! There's flooding in my area.
+    - I need help, the water is rising.
+    - There's a flood, what should I do?
+    - What do I do? There's a flood here.
+    - I am in a flood.
+    - Help it's flooding.
+    - What should I do in a flood
+    - Help me, the water is rising
+    - I'm in a flood and the water level is rising
+
+- intent: confirm_safe_location
+  examples: |
+    - I'm on the [second floor](location).
+    - Yes, I'm safe for now.
+    - No, I'm on the [ground floor](location).
+    - The water is getting close, but I'm okay.
+    - I'm on a [roof](location)
+    - I am on the [roof](location)
+
+- intent: request_relief_center
+  examples: |
+    - Where is the nearest relief center?
+    - Can you tell me where I can get help?
+    - Is there a safe place nearby?
+    - I need to find a relief center.
+    - I need shelter
+    - I need assistance
+    - I need immediate help
+
+- intent: express_distress
+  examples: |
+    - I'm scared, what do I do?
+    - The water is rising fast, I'm freaking out.
+    - I'm really worried.
+    - This is terrifying, I don't know what to do.

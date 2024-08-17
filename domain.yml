@@ -1,0 +1,37 @@
+version: "3.1"
+
+intents:
+  - greet
+  - goodbye
+  - ask_for_help_flooding
+  - confirm_safe_location
+  - request_relief_center
+  - express_distress
+
+entities:
+  - location
+
+actions:
+  - action_check_safe_location
+  - action_guide_user_to_safety
+  - action_find_relief_center
+  - action_provide_emotional_support
+
+slots:
+  location:
+    type: text
+    influence_conversation: true
+    mappings:
+    - type: from_entity
+      entity: location
+
+responses:
+  utter_greet:
+  - text: "Hello. I am a Natural Disaster Response bot."
+
+  utter_goodbye:
+  - text: "Bye"
+
+session_config:
+  session_expiration_time: 60
+  carry_over_slots_to_new_session: true
