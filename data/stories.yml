@@ -1,0 +1,33 @@
+version: "3.1"
+
+stories:
+
+- story: User greets
+  steps:
+  - intent: greet
+  - action: utter_greet
+
+- story: User says goodbye
+  steps:
+    - intent: goodbye
+    - action: utter_goodbye
+
+- story: flood_help_story
+  steps:
+  - intent: ask_for_help_flooding
+  - action: action_check_safe_location
+
+- story: check_location_story
+  steps:
+  - intent: confirm_safe_location
+  - action: action_guide_user_to_safety
+
+- story: find_relief_center_story
+  steps:
+  - intent: request_relief_center
+  - action: action_find_relief_center
+
+- story: distress_response_story
+  steps:
+  - intent: express_distress
+  - action: action_provide_emotional_support
