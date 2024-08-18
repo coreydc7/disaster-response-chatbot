@@ -1,0 +1,5 @@
+pip install rasa
+pip install geocoder
+pip install requests
+pip install rasa_sdk
+pip install openai
