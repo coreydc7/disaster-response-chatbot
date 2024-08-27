@@ -1,5 +1,5 @@
 # disaster-response-chatbot
-This repository contains several Work-In-Progress AI-powered Natural Disaster Response chatbots. 
+This repository contains several Work-In-Progress AI-powered Natural Disaster Response chatbots. These are a technical demonstration of what a real Natural Disaster Response chatbot would look like.
 
 The key features of this chatbot will be to: 
 1. provide emergency response for various types of natural disasters like earthquakes, floods, or hurricanes. Will utilize GPS location data to help users find nearby shelters, food distribution centers, or medical facilities. 

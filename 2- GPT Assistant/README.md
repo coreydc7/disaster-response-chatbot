@@ -1,4 +1,7 @@
-This iteration of the NDR Chatbot utilizes a python script to connect with a custom-trained GPT Project. These projects are managed using the OpenAI platform, and connected to using an API Key. This project is meant more as a demonstration, as the API Key for this project is hidden. 
+# GPT Implementation
+This iteration of the NDR Chatbot utilizes a python script to connect with a fine-tuned GPT Project. These projects are managed using the OpenAI platform, and connected to using an API Key. Fine-tuning allows the chatbot to speak more directly, like a 911 dispatcher, while utilizing the functions available to it better.
+
+As this is a technical demonstration, the chatbot will pull all its information about available shelters, alerts, road closures, user reports, nearby resources, etc. from a mock database whose schema is included. This is to demonstrate that the chatbot is able to perform API calls and work with real data from a live database, without needing to rely on real data. 
 
 Currently, this chatbot is capable of:
 1. Gathering the users GPS location and directing them to nearby shelter, whenever they express they are in danger. 
