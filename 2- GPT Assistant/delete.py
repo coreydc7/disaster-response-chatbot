@@ -19,7 +19,32 @@
 
 # %%
 import geocoder
+import requests
+
 location = geocoder.ip('me').latlng
 latitude = location[0]
 longitude = location[1]
+
+# Overpass API endpoint with a 5km radius around the coordinates
+url = "https://overpass-api.de/api/interpreter"
+# Overpass QL query to find shelters within 5km radius of the given location
+query = f"""
+[out:json];
+node
+[amenity=shelter](around:5000,{latitude},{longitude});
+out body;
+"""
+
+# Making the request to the Overpass API
+response = requests.get(url, params={'data': query})
+data = response.json()
+shelters = []
+for element in data['elements']:
+    if 'tags' in element:
+        name = element['tags'].get('amenity')
+        lat = element['lat']
+        lon = element['lon']
+        
+        shelters.append(f"Amenity Type: {name}\nLocation: {lat}, {lon}\n")
+print(shelters)
 # %%
