@@ -1,0 +1,5 @@
+# Rasa implementation
+This implementation of the Natural Disaster Response chatbot utilizes Rasa as the AI software. 
+Rasa works by using NLU for intent classification and entity extraction, which allows it to detect the intentions of user entered text and extract information (entities) from it. By feeding it certain example words and phrases, we can quickly train a model to understand that these phrases have a certain intention, such as being in danger. Rasa can then extract entities from user entered text, such as their current location, and interface directly with python to call functions (called actions) using the data stored in these entities. 
+
+The responses of Rasa must be all be typed by a human, as it works by going "if the intent was x (e.x greeting) then respond with y (a pre-written greeting message)". This means that every response it had would be accurate, however this seems too limiting for the scope of this project.
