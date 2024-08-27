@@ -3,3 +3,5 @@ pip install geocoder
 pip install requests
 pip install rasa_sdk
 pip install openai
+pip install mysql-connector-python
+pip install python-dotenv
