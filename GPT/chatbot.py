@@ -34,35 +34,27 @@ def create_connection():
         return None
 
 ## Start of GPT Functions
-def find_nearby_shelter():
-    location = geocoder.ip('me').latlng
-    latitude = location[0]
-    longitude = location[1]
-    
-    # Overpass API endpoint with a 5km radius around the coordinates
-    url = "https://overpass-api.de/api/interpreter"
-    # Overpass QL query to find shelters within 5km radius of the given location
-    query = f"""
-    [out:json];
-    node
-    [amenity=shelter](around:5000,{latitude},{longitude});
-    out body;
-    """
-    
-    # Making the request to the Overpass API
-    response = requests.get(url, params={'data': query})
-    data = response.json()
-    shelters = []
-    for element in data['elements']:
-        if 'tags' in element:
-            name = element['tags'].get('amenity')
-            lat = element['lat']
-            lon = element['lon']
-            
-            shelters.append(f"Amenity Type: {name}\nLocation: {lat}, {lon}\n")
-    for entry in shelters:
-        print(entry + '\n')
+# Finds open shelters for a given location
+def find_nearby_shelter(location):
+    connection = create_connection()
+    if connection:
+        cursor = connection.cursor(dictionary=True)
+        query = """
+        SELECT * FROM NDR_shelters
+        WHERE location LIKE %s
+        AND is_open = TRUE
+        AND current_occupancy < capacity;
+        """
+        cursor.execute(query, (f"%{location}%",))
+        results = cursor.fetchall()
+        cursor.close()
+        connection.close()
+        
+        # Output results
+        print(f"Location: {results[0]['location']} \n Address: {results[0]['address']} \n Shelter_name: {results[0]['shelter_name']} Max capacity: {results[0]['capacity']} \n Current occupancy: {results[0]['current_occupancy']} \n")
+    return []
 
+# Finds all active alerts for a given location
 def get_active_alerts(location):
     connection = create_connection()
     if connection:
@@ -86,7 +78,18 @@ tools = [
         "type": "function",
         "function": {
             "name": "find_nearby_shelter",
-            "description": "Returns a list of emergency shelters or relief centers near a users current location. Call this whenever a user expresses they are in danger, requests emergency shelter, or to be directed to the nearest relief center."
+            "description": "Dispkays a list of emergency shelters or relief centers for a particular location. Call this whenever a user expresses they are in danger, requests emergency shelter, or to be directed to the nearest relief center.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "location": {
+                        "type": "string",
+                        "description": "The location of a user. This must be either the name of a city, or a two-letter state code.",
+                    },
+                },
+                "required": ["location"],
+                "additionalProperties": False,
+            },
         }
     },
     {
@@ -124,7 +127,12 @@ def talk_to_gpt(user_input):
     ## check if GPT Response indicates that a function should be called and call it.
     if(response.choices[0].message.tool_calls != None): 
         if(response.choices[0].message.tool_calls[0].function.name == 'find_nearby_shelter'):
-            find_nearby_shelter()
+            tool_call = response.choices[0].message.tool_calls[0]
+            arguments_json = tool_call.function.arguments
+            arguments = json.loads(arguments_json)
+            
+            location = arguments.get('location')
+            find_nearby_shelter(location)
         if(response.choices[0].message.tool_calls[0].function.name == 'get_active_alerts'):
             tool_call = response.choices[0].message.tool_calls[0]
             arguments_json = tool_call.function.arguments # Extract the arguments from GPT response object
