@@ -1,6 +1,4 @@
 from openai import OpenAI
-import requests
-import geocoder
 import mysql.connector
 from mysql.connector import Error
 import json
@@ -51,7 +49,9 @@ def find_nearby_shelter(location):
         connection.close()
         
         # Output results
-        print(f"Location: {results[0]['location']} \n Address: {results[0]['address']} \n Shelter_name: {results[0]['shelter_name']} Max capacity: {results[0]['capacity']} \n Current occupancy: {results[0]['current_occupancy']} \n")
+        print(f"Displaying all local shelters closures for: {location} \n")
+        for entry in results:
+            print(f"Location: {entry['location']} \n Address: {entry['address']} \n Shelter_name: {entry['shelter_name']} Max capacity: {entry['capacity']} \n Current occupancy: {entry['current_occupancy']} \n")
     return []
 
 # Finds all active alerts for a given location
@@ -69,7 +69,28 @@ def get_active_alerts(location):
         connection.close()
         
         # Output results
-        print(f"Location: {results[0]['location']} \n Severity: {results[0]['severity']} \n Issued at: {results[0]['issued_at']} \n Type: {results[0]['alert_type']} \n Description: {results[0]['alert_description']} \n")
+        print(f"Displaying all emergency alerts for: {location} \n")
+        for entry in results:
+            print(f"Location: {entry['location']} \n Severity: {entry['severity']} \n Issued at: {entry['issued_at']} \n Type: {entry['alert_type']} \n Description: {entry['alert_description']} \n")
+    return []
+
+def get_active_road_closures(location):
+    connection = create_connection()
+    if connection:
+        cursor = connection.cursor(dictionary=True)
+        query = """
+        SELECT * FROM NDR_road_closures 
+        WHERE location LIKE %s AND is_active = TRUE
+        """
+        cursor.execute(query, (f"%{location}%",))
+        results = cursor.fetchall()
+        cursor.close()
+        connection.close()
+        
+        # Output results
+        print(f"Displaying all road closures for: {location} \n")
+        for entry in results:
+            print(f"Location: {entry['location']} \n Road name: {entry['road_name']} \n Closure start: {entry['closure_start']} \n Expected reopen: {entry['expected_reopen']} \n Reason: {entry['reason']} \n")
     return []
 
 ## Describes the functions to GPT
@@ -109,6 +130,24 @@ tools = [
                 "additionalProperties": False,
             },
         }
+    },
+    {
+        "type" : "function",
+        "function": {
+            "name": "get_active_road_closures",
+            "description": "Get any active road closures for a particular location. Call this whenever a user asks for the status of roads, road closures, or any updates on the road conditions for a particular location.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "location": {
+                        "type": "string",
+                        "description": "The location of a user. This must be either the name of a city, or a two-letter state code.",
+                    },
+                },
+                "required": ["location"],
+                "additionalProperties": False,
+            },
+        }
     }
 ]
 
@@ -128,20 +167,25 @@ def talk_to_gpt(user_input):
     if(response.choices[0].message.tool_calls != None): 
         if(response.choices[0].message.tool_calls[0].function.name == 'find_nearby_shelter'):
             tool_call = response.choices[0].message.tool_calls[0]
+            arguments_json = tool_call.function.arguments # Extract the arguments from GPT response object
+            arguments = json.loads(arguments_json)
+            
+            location = arguments.get('location')
+            find_nearby_shelter(location) # Call the function with the extracted location
+        if(response.choices[0].message.tool_calls[0].function.name == 'get_active_alerts'):
+            tool_call = response.choices[0].message.tool_calls[0]
+            arguments_json = tool_call.function.arguments
+            arguments = json.loads(arguments_json)
+                        
+            location = arguments.get('location')
+            get_active_alerts(location)
+        if(response.choices[0].message.tool_calls[0].function.name == 'get_active_road_closures'):
+            tool_call = response.choices[0].message.tool_calls[0]
             arguments_json = tool_call.function.arguments
             arguments = json.loads(arguments_json)
             
             location = arguments.get('location')
-            find_nearby_shelter(location)
-        if(response.choices[0].message.tool_calls[0].function.name == 'get_active_alerts'):
-            tool_call = response.choices[0].message.tool_calls[0]
-            arguments_json = tool_call.function.arguments # Extract the arguments from GPT response object
-            arguments = json.loads(arguments_json)
-                        
-            location = arguments.get('location')
-            
-            # Call the function with the extracted location
-            get_active_alerts(location)
+            get_active_road_closures(location)
     return response.choices[0].message.content
 
 def main():
