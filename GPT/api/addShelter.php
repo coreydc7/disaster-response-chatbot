@@ -18,24 +18,23 @@ if (json_last_error() !== JSON_ERROR_NONE) {
     exit;
 }
 
-$type = $data['type'];
-$severity = $data['severity'];
+$name = $data['name'];
+$address = $data['address'];
+$capacity = $data['capacity'];
 $location = $data['location'];
-$description = $data['description'];
 
 // Create SQL Prepared Statement
 $response;
-$sql = "INSERT INTO NDR_alerts (alert_type, alert_description, severity, location) VALUES ('$type', '$description', '$severity', '$location')";
+$sql = "INSERT INTO NDR_shelters (shelter_name, address, capacity, location) VALUES ('$name', '$address', '$capacity', '$location')";
 if ($connection->query($sql) === true) {
     // Send response
     echo json_encode([
         'status' => 'success',
-        'message' => "Success! Type: $type. Severity: $severity. Location: $location. Description: $description."
+        'message' => "Success! Type: $type. Number: $number. Location: $location."
     ]);
 } else {
     echo json_encode([
         'status' => 'failed',
-        'message' => "Failed to create alert."
+        'message' => "Failed to add service."
     ]);
 }
-

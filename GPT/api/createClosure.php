@@ -18,24 +18,23 @@ if (json_last_error() !== JSON_ERROR_NONE) {
     exit;
 }
 
-$type = $data['type'];
-$severity = $data['severity'];
+$name = $data['name'];
+$time = $data['time'];
 $location = $data['location'];
-$description = $data['description'];
+$reason = $data['description'];
 
 // Create SQL Prepared Statement
 $response;
-$sql = "INSERT INTO NDR_alerts (alert_type, alert_description, severity, location) VALUES ('$type', '$description', '$severity', '$location')";
+$sql = "INSERT INTO NDR_road_closures (road_name, reason, expected_reopen, location) VALUES ('$name', '$reason', '$time', '$location')";
 if ($connection->query($sql) === true) {
     // Send response
     echo json_encode([
         'status' => 'success',
-        'message' => "Success! Type: $type. Severity: $severity. Location: $location. Description: $description."
+        'message' => "Success! Name: $name. Reason: $reason. Reopen: $time. Location: $location."
     ]);
 } else {
     echo json_encode([
         'status' => 'failed',
-        'message' => "Failed to create alert."
+        'message' => "Failed to create closure."
     ]);
 }
-
