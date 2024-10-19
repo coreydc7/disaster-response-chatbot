@@ -25,7 +25,7 @@ CREATE TABLE NDR_road_closures (
     closure_id INT AUTO_INCREMENT PRIMARY KEY,
     road_name VARCHAR(100) NOT NULL,
     reason VARCHAR(100) NOT NULL, -- Flooding, debris, etc
-    closure_start TIMESTAMP NOT NULL,
+    closure_start TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     expected_reopen TIMESTAMP,
     location VARCHAR(100) NOT NULL, -- City or region
     is_active BOOLEAN DEFAULT TRUE
